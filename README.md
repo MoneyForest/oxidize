@@ -116,19 +116,22 @@ oxidize/
 │   │   │   ├── database/     # Repository implementations (sqlx)
 │   │   │   ├── grpc/         # gRPC handlers (tonic)
 │   │   │   ├── http/         # HTTP handlers (axum)
-│   │   │   ├── external/     # External API clients
-│   │   │   ├── config/       # Environment config
-│   │   │   ├── cli/          # CLI commands (clap)
+│   │   │   ├── cmd/          # CLI commands (clap)
+│   │   │   ├── environment/  # Environment config
+│   │   │   ├── otel/         # OpenTelemetry setup
+│   │   │   ├── registry.rs   # Centralized DI container
 │   │   │   └── lib.rs
 │   │   └── Cargo.toml
 │   │
 │   └── app/              # Application entry point
 │       ├── src/
-│       │   └── main.rs       # DI & bootstrap
+│       │   └── main.rs       # Bootstrap & server startup
 │       └── Cargo.toml
 │
-├── proto/                # Protocol Buffer definitions
-├── migrations/           # SQL migrations
+├── schema/
+│   └── proto/            # Protocol Buffer definitions
+├── db/
+│   └── migrations/       # SQL migrations
 └── docker/               # Dockerfiles
 ```
 
@@ -145,8 +148,9 @@ oxidize/
 | DB操作の実装 | `infrastructure/database/` | `UserRepositoryImpl` |
 | gRPCハンドラ | `infrastructure/grpc/` | `UserServiceServer` |
 | HTTPハンドラ | `infrastructure/http/` | `create_user_handler` |
-| 環境変数読み込み | `infrastructure/config/` | `DatabaseConfig` |
-| CLIコマンド | `infrastructure/cli/` | `MigrateCommand` |
+| 環境変数読み込み | `infrastructure/environment/` | `Environment` |
+| CLIコマンド | `infrastructure/cmd/` | `Cli`, `Commands` |
+| DI設定 | `infrastructure/registry.rs` | `Registry` (Interactor組み立て) |
 
 ## Rust Learning Points
 
@@ -158,6 +162,71 @@ oxidize/
 4. **非同期処理** - tokio, async/await
 5. **ライフタイム** - 参照の有効期間
 6. **マクロ** - derive, proc-macro
+
+## Development Flow
+
+新しいエンティティ（例: `Order`）を追加する場合の開発フロー:
+
+### 1. Domain Layer
+
+```bash
+# model定義
+crates/domain/src/model/order.rs
+crates/domain/src/model/mod.rs  # pub mod order; を追加
+
+# repositoryトレイト定義
+crates/domain/src/repository/order.rs
+crates/domain/src/repository/mod.rs  # pub mod order; を追加
+```
+
+### 2. Usecase Layer
+
+```bash
+# input/output定義
+crates/usecase/src/input/order.rs
+crates/usecase/src/output/order.rs
+
+# interactor実装
+crates/usecase/src/interactor/order.rs
+
+# mod.rsに追加
+crates/usecase/src/input/mod.rs
+crates/usecase/src/output/mod.rs
+crates/usecase/src/interactor/mod.rs
+crates/usecase/src/lib.rs  # re-export
+```
+
+### 3. Infrastructure Layer
+
+```bash
+# repository実装
+crates/infrastructure/src/database/order.rs
+crates/infrastructure/src/database/mod.rs
+
+# gRPCサービス (必要な場合)
+schema/proto/order.proto
+crates/infrastructure/src/grpc/order_service.rs
+crates/infrastructure/src/grpc/mod.rs
+crates/infrastructure/src/grpc/server.rs  # サービス追加
+
+# HTTPハンドラ (必要な場合)
+crates/infrastructure/src/http/handlers.rs  # ハンドラ追加
+crates/infrastructure/src/http/router.rs    # ルート追加
+```
+
+### 4. DI設定
+
+```bash
+# RegistryにInteractorを追加
+crates/infrastructure/src/registry.rs
+```
+
+### 5. マイグレーション
+
+```bash
+# SQLマイグレーション作成
+db/migrations/YYYYMMDDHHMMSS_create_orders.sql
+```
 
 ## Development
 
