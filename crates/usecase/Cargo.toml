@@ -1,0 +1,9 @@
+[package]
+name = "oxidize-usecase"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+oxidize-domain.workspace = true
+async-trait.workspace = true
+chrono.workspace = true

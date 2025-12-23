@@ -8,7 +8,7 @@ pub struct GetTenantQuery {
     pub id: Option<TenantId>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct ListTenantQuery {
     pub limit: Option<u64>,
     pub offset: Option<u64>,

@@ -10,7 +10,7 @@ pub struct GetStaffQuery {
     pub with_tenant: bool,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct ListStaffQuery {
     pub tenant_id: Option<TenantId>,
     pub limit: Option<u64>,
