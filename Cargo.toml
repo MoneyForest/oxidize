@@ -19,6 +19,9 @@ clap = { version = "4.5", features = ["derive"] }
 axum = "0.8"
 tower = "0.5"
 tower-http = { version = "0.6", features = ["cors", "trace"] }
+tonic = "0.13"
+prost = "0.13"
+tonic-build = "0.13"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dotenvy = "0.15"
