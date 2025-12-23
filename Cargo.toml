@@ -23,3 +23,6 @@ uuid = { version = "1.11", features = ["v4"] }
 
 # Async
 async-trait = "0.1"
+
+# Internal crates
+oxidize-domain = { path = "crates/domain" }
