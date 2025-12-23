@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use tonic::transport::Server;
+use tower_http::trace::TraceLayer;
 
 use crate::config::Config;
 use oxidize_infrastructure::{create_pool, StaffRepositoryImpl, TenantRepositoryImpl};
@@ -27,7 +28,10 @@ pub async fn run_grpc_server(port: u16) -> anyhow::Result<()> {
     let addr = format!("0.0.0.0:{}", port).parse()?;
     tracing::info!("Starting gRPC server on {}", addr);
 
+    let trace_layer = TraceLayer::new_for_grpc();
+
     Server::builder()
+        .layer(trace_layer)
         .add_service(StaffServiceServer::new(staff_service))
         .add_service(TenantServiceServer::new(tenant_service))
         .serve(addr)
