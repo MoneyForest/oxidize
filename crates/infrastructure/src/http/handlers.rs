@@ -5,7 +5,7 @@ use serde::Serialize;
 
 use oxidize_usecase::{ListStaffInput, ListStaffOutput, ListTenantInput, ListTenantOutput};
 
-use super::router::AppState;
+use crate::registry::Registry;
 
 #[derive(Serialize)]
 pub struct HealthResponse {
@@ -31,7 +31,7 @@ pub struct TenantResponse {
 
 #[tracing::instrument(skip(state))]
 pub async fn list_tenants(
-    State(state): State<Arc<AppState>>,
+    State(state): State<Arc<Registry>>,
 ) -> Result<Json<ListTenantsResponse>, StatusCode> {
     let input = ListTenantInput::default();
 
@@ -72,7 +72,7 @@ pub struct StaffResponse {
 
 #[tracing::instrument(skip(state))]
 pub async fn list_staffs(
-    State(state): State<Arc<AppState>>,
+    State(state): State<Arc<Registry>>,
 ) -> Result<Json<ListStaffsResponse>, StatusCode> {
     let input = ListStaffInput::default();
 
