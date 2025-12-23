@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+# 共通の依存関係をワークスペースレベルで定義
+# 各crateは `xxx.workspace = true` で参照できる
+[workspace.dependencies]
+# エラーハンドリング
+thiserror = "2.0"
+
+# 時刻
+chrono = { version = "0.4", features = ["serde"] }
+
+# シリアライズ
+serde = { version = "1.0", features = ["derive"] }
