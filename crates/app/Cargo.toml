@@ -10,6 +10,7 @@ path = "src/main.rs"
 [dependencies]
 anyhow.workspace = true
 oxidize-infrastructure.workspace = true
+oxidize-injection.workspace = true
 tokio.workspace = true
 clap.workspace = true
 tracing.workspace = true

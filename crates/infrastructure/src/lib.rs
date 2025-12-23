@@ -9,4 +9,4 @@ pub use cmd::{Cli, Commands};
 pub use database::*;
 pub use environment::Environment;
 pub use grpc::run_grpc_server;
-pub use http::run_http_server;
+pub use http::{run_http_server, AppState};
