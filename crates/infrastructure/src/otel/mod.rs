@@ -4,12 +4,12 @@ use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{runtime, trace::TracerProvider, Resource};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
-use crate::config::Config;
+use crate::environment::Environment;
 
-pub fn init_telemetry(config: &Config) -> anyhow::Result<Option<TracerProvider>> {
+pub fn init(env: &Environment) -> anyhow::Result<Option<TracerProvider>> {
     let env_filter = EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into());
 
-    if let Some(ref otlp_endpoint) = config.otlp_endpoint {
+    if let Some(ref otlp_endpoint) = env.otlp_endpoint {
         let exporter = opentelemetry_otlp::SpanExporter::builder()
             .with_tonic()
             .with_endpoint(otlp_endpoint)
@@ -45,7 +45,7 @@ pub fn init_telemetry(config: &Config) -> anyhow::Result<Option<TracerProvider>>
     }
 }
 
-pub fn shutdown_telemetry(provider: Option<TracerProvider>) {
+pub fn shutdown(provider: Option<TracerProvider>) {
     if let Some(provider) = provider {
         if let Err(e) = provider.shutdown() {
             tracing::error!("Failed to shutdown OpenTelemetry: {:?}", e);

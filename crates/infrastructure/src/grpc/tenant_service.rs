@@ -1,11 +1,12 @@
 use tonic::{Request, Response, Status};
 
 use oxidize_domain::TenantId;
-use oxidize_infrastructure::TenantRepositoryImpl;
 use oxidize_usecase::{
     CreateTenantInput, DeleteTenantInput, GetTenantInput, ListTenantInput, TenantInteractor,
     UpdateTenantInput,
 };
+
+use crate::database::TenantRepositoryImpl;
 
 pub mod proto {
     tonic::include_proto!("tenant");

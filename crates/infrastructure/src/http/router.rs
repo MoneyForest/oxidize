@@ -4,11 +4,10 @@ use axum::{extract::Request, routing::get, Router};
 use tower_http::trace::{DefaultOnResponse, MakeSpan, TraceLayer};
 use tracing::{Level, Span};
 
-use crate::config::Config;
-use oxidize_infrastructure::{create_pool, StaffRepositoryImpl, TenantRepositoryImpl};
 use oxidize_usecase::{StaffInteractor, TenantInteractor};
 
 use super::handlers;
+use crate::database::{create_pool, StaffRepositoryImpl, TenantRepositoryImpl};
 
 pub struct AppState {
     pub staff_interactor: StaffInteractor<StaffRepositoryImpl>,
@@ -31,9 +30,8 @@ impl MakeSpan<axum::body::Body> for OtelMakeSpan {
     }
 }
 
-pub async fn run_server(port: u16) -> anyhow::Result<()> {
-    let config = Config::from_env();
-    let pool = create_pool(&config.database_url).await?;
+pub async fn run_http_server(port: u16, database_url: &str) -> anyhow::Result<()> {
+    let pool = create_pool(database_url).await?;
 
     let staff_repo = Arc::new(StaffRepositoryImpl::new(pool.clone()));
     let tenant_repo = Arc::new(TenantRepositoryImpl::new(pool));

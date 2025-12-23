@@ -1,12 +1,12 @@
 use std::env;
 
 #[derive(Clone)]
-pub struct Config {
+pub struct Environment {
     pub database_url: String,
     pub otlp_endpoint: Option<String>,
 }
 
-impl Config {
+impl Environment {
     pub fn from_env() -> Self {
         Self {
             database_url: env::var("DATABASE_URL")

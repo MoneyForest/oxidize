@@ -1,11 +1,12 @@
 use tonic::{Request, Response, Status};
 
 use oxidize_domain::{StaffId, StaffRole, TenantId};
-use oxidize_infrastructure::StaffRepositoryImpl;
 use oxidize_usecase::{
     CreateStaffInput, DeleteStaffInput, GetStaffInput, ListStaffInput, StaffInteractor,
     UpdateStaffInput,
 };
+
+use crate::database::StaffRepositoryImpl;
 
 pub mod proto {
     tonic::include_proto!("staff");

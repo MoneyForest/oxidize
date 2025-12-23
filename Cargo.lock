@@ -1325,27 +1325,12 @@ name = "oxidize"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "async-trait",
- "axum 0.8.8",
  "clap",
  "dotenvy",
- "opentelemetry",
- "opentelemetry-otlp",
- "opentelemetry_sdk",
- "oxidize-domain",
  "oxidize-infrastructure",
- "oxidize-usecase",
- "prost",
- "serde",
  "sqlx",
  "tokio",
- "tonic 0.13.1",
- "tonic-build",
- "tower 0.5.2",
- "tower-http",
  "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -1363,11 +1348,27 @@ dependencies = [
 name = "oxidize-infrastructure"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-trait",
+ "axum 0.8.8",
  "chrono",
+ "clap",
+ "opentelemetry",
+ "opentelemetry-otlp",
+ "opentelemetry_sdk",
  "oxidize-domain",
  "oxidize-usecase",
+ "prost",
+ "serde",
  "sqlx",
+ "tokio",
+ "tonic 0.13.1",
+ "tonic-build",
+ "tower 0.5.2",
+ "tower-http",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
 ]
 
 [[package]]
