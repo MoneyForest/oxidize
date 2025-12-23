@@ -6,28 +6,22 @@ members = ["crates/*"]
 version = "0.1.0"
 edition = "2021"
 
-# 共通の依存関係をワークスペースレベルで定義
-# 各crateは `xxx.workspace = true` で参照できる
 [workspace.dependencies]
-# エラーハンドリング
 thiserror = "2.0"
-
-# 時刻
+anyhow = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
-
-# シリアライズ
 serde = { version = "1.0", features = ["derive"] }
-
-# UUID
 uuid = { version = "1.11", features = ["v4"] }
-
-# Async
 async-trait = "0.1"
 tokio = { version = "1.42", features = ["full"] }
-
-# Database
 sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "chrono", "uuid"] }
-
-# Internal crates
+clap = { version = "4.5", features = ["derive"] }
+axum = "0.8"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
 oxidize-domain = { path = "crates/domain" }
 oxidize-usecase = { path = "crates/usecase" }
+oxidize-infrastructure = { path = "crates/infrastructure" }
