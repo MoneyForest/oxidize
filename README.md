@@ -98,7 +98,6 @@ oxidize/
 │   │   ├── src/
 │   │   │   ├── model/        # Entity, Value Object
 │   │   │   ├── repository/   # Repository traits (interface)
-│   │   │   ├── service/      # Domain services
 │   │   │   ├── error.rs      # Domain errors
 │   │   │   └── lib.rs
 │   │   └── Cargo.toml
@@ -116,37 +115,40 @@ oxidize/
 │   │   │   ├── database/     # Repository implementations (sqlx)
 │   │   │   ├── grpc/         # gRPC handlers (tonic)
 │   │   │   ├── http/         # HTTP handlers (axum)
-│   │   │   ├── external/     # External API clients
-│   │   │   ├── config/       # Environment config
-│   │   │   ├── cli/          # CLI commands (clap)
+│   │   │   ├── otel/         # OpenTelemetry setup
+│   │   │   ├── registry.rs   # DI Registry
 │   │   │   └── lib.rs
 │   │   └── Cargo.toml
 │   │
 │   └── app/              # Application entry point
 │       ├── src/
-│       │   └── main.rs       # DI & bootstrap
+│       │   └── main.rs       # Bootstrap
 │       └── Cargo.toml
 │
-├── proto/                # Protocol Buffer definitions
-├── migrations/           # SQL migrations
-└── docker/               # Dockerfiles
+├── schema/
+│   └── proto/            # Protocol Buffer definitions
+├── db/
+│   └── migrations/       # SQL migrations
+├── docker/
+│   └── Dockerfile        # Multi-stage build
+└── docker-compose.yml
 ```
 
 ## Where Should I Put This Code?
 
 | コードの種類 | 配置先 | 例 |
 |-------------|--------|-----|
-| ビジネスエンティティ | `domain/model/` | `User`, `Tenant` |
-| ID型, Email型 | `domain/model/` | `UserId`, `Email` (Value Object) |
-| Repository インターフェース | `domain/repository/` | `trait UserRepository` |
-| 複数エンティティのロジック | `domain/service/` | `AuthorizationService` |
-| ユースケース実装 | `usecase/interactor/` | `CreateUserInteractor` |
-| API入出力の型 | `usecase/input/`, `output/` | `CreateUserInput` |
-| DB操作の実装 | `infrastructure/database/` | `UserRepositoryImpl` |
-| gRPCハンドラ | `infrastructure/grpc/` | `UserServiceServer` |
-| HTTPハンドラ | `infrastructure/http/` | `create_user_handler` |
-| 環境変数読み込み | `infrastructure/config/` | `DatabaseConfig` |
-| CLIコマンド | `infrastructure/cli/` | `MigrateCommand` |
+| ビジネスエンティティ | `domain/model/` | `Tenant`, `Staff` |
+| ID型, Value Object | `domain/model/` | `TenantId`, `StaffRole` |
+| Repository インターフェース | `domain/repository/` | `trait TenantRepository` |
+| ユースケース実装 | `usecase/interactor/` | `TenantInteractor` |
+| API入出力の型 | `usecase/input/`, `output/` | `CreateTenantInput` |
+| DB操作の実装 | `infrastructure/database/` | `TenantRepositoryImpl` |
+| DI登録 | `infrastructure/registry.rs` | `Registry` |
+| gRPCサービス | `infrastructure/grpc/` | `TenantServiceImpl` |
+| HTTPハンドラ | `infrastructure/http/` | `list_tenants` |
+| Proto定義 | `schema/proto/` | `tenant.proto` |
+| DBマイグレーション | `db/migrations/` | `create_tenants.sql` |
 
 ## Rust Learning Points
 
@@ -168,14 +170,88 @@ cargo build
 # Run tests
 cargo test
 
-# Run server
-cargo run -- http-server run
+# Run HTTP server
+cargo run -- http-server --port 8080
+
+# Run gRPC server
+cargo run -- grpc-server --port 50051
+
+# Run migrations
+cargo run -- migrate
 
 # Format
 cargo fmt
 
 # Lint
 cargo clippy
+```
+
+## Development Flow
+
+新機能を追加する際の開発フロー:
+
+### 1. Domain Layer
+
+```rust
+// 1-1. Model定義 (crates/domain/src/model/order.rs)
+pub struct Order { ... }
+pub struct OrderId(String);
+
+// 1-2. Repository trait定義 (crates/domain/src/repository/order.rs)
+#[async_trait]
+pub trait OrderRepository: Send + Sync {
+    async fn get(&self, id: &OrderId) -> Result<Option<Order>>;
+    async fn create(&self, order: &Order) -> Result<()>;
+}
+```
+
+### 2. Usecase Layer
+
+```rust
+// 2-1. Input/Output定義 (crates/usecase/src/input/order.rs)
+pub struct CreateOrderInput { ... }
+
+// 2-2. Interactor実装 (crates/usecase/src/interactor/order.rs)
+pub struct OrderInteractor<R: OrderRepository> {
+    repository: Arc<R>,
+}
+```
+
+### 3. Infrastructure Layer
+
+```rust
+// 3-1. Repository実装 (crates/infrastructure/src/database/order.rs)
+pub struct OrderRepositoryImpl { pool: PgPool }
+
+impl OrderRepository for OrderRepositoryImpl { ... }
+
+// 3-2. Registryに登録 (crates/infrastructure/src/registry.rs)
+pub struct Registry {
+    pub order_interactor: OrderInteractor<OrderRepositoryImpl>,  // 追加
+}
+
+// 3-3. HTTP/gRPCハンドラ追加
+// - crates/infrastructure/src/http/handlers.rs
+// - crates/infrastructure/src/grpc/order_service.rs
+```
+
+### 4. Proto定義 (gRPCの場合)
+
+```protobuf
+// schema/proto/order/order.proto
+service OrderService {
+    rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+}
+```
+
+### Summary
+
+```
+Domain (white-box)     → Usecase              → Infrastructure
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Model定義           → 2. Input/Output      → 3. Repository実装
+   Repository trait       Interactor             Registry登録
+                                                 HTTP/gRPC handlers
 ```
 
 ## PRs (Learning Steps)
