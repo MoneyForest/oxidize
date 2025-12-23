@@ -23,6 +23,11 @@ uuid = { version = "1.11", features = ["v4"] }
 
 # Async
 async-trait = "0.1"
+tokio = { version = "1.42", features = ["full"] }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "chrono", "uuid"] }
 
 # Internal crates
 oxidize-domain = { path = "crates/domain" }
+oxidize-usecase = { path = "crates/usecase" }

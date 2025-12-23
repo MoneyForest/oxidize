@@ -1,0 +1,11 @@
+[package]
+name = "oxidize-infrastructure"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+oxidize-domain.workspace = true
+oxidize-usecase.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+sqlx.workspace = true
