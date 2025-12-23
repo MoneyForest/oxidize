@@ -1328,7 +1328,6 @@ dependencies = [
  "clap",
  "dotenvy",
  "oxidize-infrastructure",
- "oxidize-injection",
  "sqlx",
  "tokio",
  "tracing",
@@ -1370,17 +1369,6 @@ dependencies = [
  "tracing",
  "tracing-opentelemetry",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "oxidize-injection"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "oxidize-domain",
- "oxidize-infrastructure",
- "oxidize-usecase",
- "sqlx",
 ]
 
 [[package]]

@@ -1,12 +1,13 @@
+use std::sync::Arc;
+
 use tonic::{Request, Response, Status};
 
 use oxidize_domain::{StaffId, StaffRole, TenantId};
 use oxidize_usecase::{
-    CreateStaffInput, DeleteStaffInput, GetStaffInput, ListStaffInput, StaffInteractor,
-    UpdateStaffInput,
+    CreateStaffInput, DeleteStaffInput, GetStaffInput, ListStaffInput, UpdateStaffInput,
 };
 
-use crate::database::StaffRepositoryImpl;
+use crate::registry::Registry;
 
 pub mod proto {
     tonic::include_proto!("staff");
@@ -20,12 +21,12 @@ use proto::{
 };
 
 pub struct StaffServiceImpl {
-    interactor: StaffInteractor<StaffRepositoryImpl>,
+    registry: Arc<Registry>,
 }
 
 impl StaffServiceImpl {
-    pub fn new(interactor: StaffInteractor<StaffRepositoryImpl>) -> Self {
-        Self { interactor }
+    pub fn new(registry: Arc<Registry>) -> Self {
+        Self { registry }
     }
 }
 
@@ -66,7 +67,8 @@ impl StaffService for StaffServiceImpl {
         };
 
         let staff = self
-            .interactor
+            .registry
+            .staff_interactor
             .get(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?
@@ -90,7 +92,8 @@ impl StaffService for StaffServiceImpl {
         };
 
         let output = self
-            .interactor
+            .registry
+            .staff_interactor
             .list(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -117,7 +120,8 @@ impl StaffService for StaffServiceImpl {
         };
 
         let staff = self
-            .interactor
+            .registry
+            .staff_interactor
             .create(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -142,7 +146,8 @@ impl StaffService for StaffServiceImpl {
         };
 
         let staff = self
-            .interactor
+            .registry
+            .staff_interactor
             .update(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -162,7 +167,8 @@ impl StaffService for StaffServiceImpl {
             id: StaffId::from_string(req.id),
         };
 
-        self.interactor
+        self.registry
+            .staff_interactor
             .delete(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;

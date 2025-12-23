@@ -1,12 +1,13 @@
+use std::sync::Arc;
+
 use tonic::{Request, Response, Status};
 
 use oxidize_domain::TenantId;
 use oxidize_usecase::{
-    CreateTenantInput, DeleteTenantInput, GetTenantInput, ListTenantInput, TenantInteractor,
-    UpdateTenantInput,
+    CreateTenantInput, DeleteTenantInput, GetTenantInput, ListTenantInput, UpdateTenantInput,
 };
 
-use crate::database::TenantRepositoryImpl;
+use crate::registry::Registry;
 
 pub mod proto {
     tonic::include_proto!("tenant");
@@ -20,12 +21,12 @@ use proto::{
 };
 
 pub struct TenantServiceImpl {
-    interactor: TenantInteractor<TenantRepositoryImpl>,
+    registry: Arc<Registry>,
 }
 
 impl TenantServiceImpl {
-    pub fn new(interactor: TenantInteractor<TenantRepositoryImpl>) -> Self {
-        Self { interactor }
+    pub fn new(registry: Arc<Registry>) -> Self {
+        Self { registry }
     }
 }
 
@@ -51,7 +52,8 @@ impl TenantService for TenantServiceImpl {
         };
 
         let tenant = self
-            .interactor
+            .registry
+            .tenant_interactor
             .get(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?
@@ -74,7 +76,8 @@ impl TenantService for TenantServiceImpl {
         };
 
         let output = self
-            .interactor
+            .registry
+            .tenant_interactor
             .list(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -94,7 +97,8 @@ impl TenantService for TenantServiceImpl {
         let input = CreateTenantInput { name: req.name };
 
         let tenant = self
-            .interactor
+            .registry
+            .tenant_interactor
             .create(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -116,7 +120,8 @@ impl TenantService for TenantServiceImpl {
         };
 
         let tenant = self
-            .interactor
+            .registry
+            .tenant_interactor
             .update(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -136,7 +141,8 @@ impl TenantService for TenantServiceImpl {
             id: TenantId::from_string(req.id),
         };
 
-        self.interactor
+        self.registry
+            .tenant_interactor
             .delete(input)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;

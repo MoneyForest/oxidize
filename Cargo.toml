@@ -32,4 +32,3 @@ dotenvy = "0.15"
 oxidize-domain = { path = "crates/domain" }
 oxidize-usecase = { path = "crates/usecase" }
 oxidize-infrastructure = { path = "crates/infrastructure" }
-oxidize-injection = { path = "crates/injection" }

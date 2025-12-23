@@ -4,15 +4,8 @@ use axum::{extract::Request, routing::get, Router};
 use tower_http::trace::{DefaultOnResponse, MakeSpan, TraceLayer};
 use tracing::{Level, Span};
 
-use oxidize_usecase::{StaffInteractor, TenantInteractor};
-
 use super::handlers;
-use crate::database::{StaffRepositoryImpl, TenantRepositoryImpl};
-
-pub struct AppState {
-    pub staff_interactor: StaffInteractor<StaffRepositoryImpl>,
-    pub tenant_interactor: TenantInteractor<TenantRepositoryImpl>,
-}
+use crate::registry::Registry;
 
 #[derive(Clone)]
 struct OtelMakeSpan;
@@ -30,7 +23,7 @@ impl MakeSpan<axum::body::Body> for OtelMakeSpan {
     }
 }
 
-pub async fn run_http_server(port: u16, state: Arc<AppState>) -> anyhow::Result<()> {
+pub async fn run_http_server(port: u16, registry: Arc<Registry>) -> anyhow::Result<()> {
     let trace_layer = TraceLayer::new_for_http()
         .make_span_with(OtelMakeSpan)
         .on_response(DefaultOnResponse::new().level(Level::INFO));
@@ -40,7 +33,7 @@ pub async fn run_http_server(port: u16, state: Arc<AppState>) -> anyhow::Result<
         .route("/api/v1/tenants", get(handlers::list_tenants))
         .route("/api/v1/staffs", get(handlers::list_staffs))
         .layer(trace_layer)
-        .with_state(state);
+        .with_state(registry);
 
     let addr = format!("0.0.0.0:{}", port);
     tracing::info!("Starting HTTP server on {}", addr);
