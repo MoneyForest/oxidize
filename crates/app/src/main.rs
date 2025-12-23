@@ -1,5 +1,6 @@
 mod cli;
 mod config;
+mod grpc;
 mod http;
 
 use clap::Parser;
@@ -21,6 +22,9 @@ async fn main() -> anyhow::Result<()> {
     match cli.command {
         Commands::HttpServer { port } => {
             http::run_server(port).await?;
+        }
+        Commands::GrpcServer { port } => {
+            grpc::run_grpc_server(port).await?;
         }
         Commands::Migrate => {
             tracing::info!("Running migrations...");

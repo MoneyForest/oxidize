@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package staff;
+
+service StaffService {
+  rpc GetStaff(GetStaffRequest) returns (GetStaffResponse);
+  rpc ListStaffs(ListStaffsRequest) returns (ListStaffsResponse);
+  rpc CreateStaff(CreateStaffRequest) returns (CreateStaffResponse);
+  rpc UpdateStaff(UpdateStaffRequest) returns (UpdateStaffResponse);
+  rpc DeleteStaff(DeleteStaffRequest) returns (DeleteStaffResponse);
+}
+
+message Staff {
+  string id = 1;
+  string tenant_id = 2;
+  string role = 3;
+  string auth_uid = 4;
+  string display_name = 5;
+  string image_path = 6;
+  string email = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message GetStaffRequest {
+  optional string id = 1;
+  optional string auth_uid = 2;
+}
+
+message GetStaffResponse {
+  Staff staff = 1;
+}
+
+message ListStaffsRequest {
+  optional string tenant_id = 1;
+  optional uint64 limit = 2;
+  optional uint64 offset = 3;
+}
+
+message ListStaffsResponse {
+  repeated Staff staffs = 1;
+  uint64 total_count = 2;
+}
+
+message CreateStaffRequest {
+  string tenant_id = 1;
+  string role = 2;
+  string auth_uid = 3;
+  string display_name = 4;
+  string image_path = 5;
+  string email = 6;
+}
+
+message CreateStaffResponse {
+  Staff staff = 1;
+}
+
+message UpdateStaffRequest {
+  string id = 1;
+  optional string role = 2;
+  optional string display_name = 3;
+  optional string image_path = 4;
+  optional string email = 5;
+}
+
+message UpdateStaffResponse {
+  Staff staff = 1;
+}
+
+message DeleteStaffRequest {
+  string id = 1;
+}
+
+message DeleteStaffResponse {}
