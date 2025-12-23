@@ -1,6 +1,8 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     command: ["http-server", "--port", "8080"]
     ports:
       - "8080:8080"
@@ -15,7 +17,9 @@ services:
         condition: service_started
 
   grpc:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     command: ["grpc-server", "--port", "50051"]
     ports:
       - "50051:50051"
@@ -30,7 +34,9 @@ services:
         condition: service_started
 
   migrate:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     command: ["migrate"]
     environment:
       DATABASE_URL: postgres://oxidize:oxidize@postgres:5432/maindb
