@@ -1,8 +1,9 @@
 use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum TenantTagType {
+    #[default]
     Unknown,
     Entertainment,
     Education,
@@ -43,12 +44,6 @@ impl FromStr for TenantTagType {
 impl fmt::Display for TenantTagType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
-    }
-}
-
-impl Default for TenantTagType {
-    fn default() -> Self {
-        TenantTagType::Unknown
     }
 }
 

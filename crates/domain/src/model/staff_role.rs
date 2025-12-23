@@ -1,8 +1,9 @@
 use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum StaffRole {
+    #[default]
     Unknown,
     Normal,
     Admin,
@@ -41,12 +42,6 @@ impl FromStr for StaffRole {
 impl fmt::Display for StaffRole {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
-    }
-}
-
-impl Default for StaffRole {
-    fn default() -> Self {
-        StaffRole::Unknown
     }
 }
 
