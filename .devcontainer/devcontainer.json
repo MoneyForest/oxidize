@@ -15,6 +15,7 @@
         "vadimcn.vscode-lldb"
       ],
       "settings": {
+        "rust-analyzer.checkOnSave": true,
         "rust-analyzer.check.command": "clippy",
         "editor.formatOnSave": true,
         "[rust]": {
