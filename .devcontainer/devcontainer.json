@@ -5,7 +5,7 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers-contrib/features/pre-commit:2": {}
   },
-  "postCreateCommand": "rustup component add clippy rustfmt && pre-commit install",
+  "postCreateCommand": "rustup component add clippy rustfmt && git config --unset-all core.hooksPath || true && pre-commit install",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -15,7 +15,7 @@
         "vadimcn.vscode-lldb"
       ],
       "settings": {
-        "rust-analyzer.checkOnSave.command": "clippy",
+        "rust-analyzer.check.command": "clippy",
         "editor.formatOnSave": true,
         "[rust]": {
           "editor.defaultFormatter": "rust-lang.rust-analyzer"
