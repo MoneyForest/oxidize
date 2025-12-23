@@ -3,9 +3,11 @@
   "image": "mcr.microsoft.com/devcontainers/rust:1-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {}
+    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+    "ghcr.io/devcontainers/features/node:1": {}
   },
-  "postCreateCommand": "rustup component add clippy rustfmt && git config --unset-all core.hooksPath || true && pre-commit install",
+  "postCreateCommand": "rustup component add clippy rustfmt && (git config --global --unset core.hooksPath || true) && (pre-commit install || true) && npm install -g @anthropic-ai/claude-code@latest",
+  "updateContentCommand": "npm update -g @anthropic-ai/claude-code",
   "customizations": {
     "vscode": {
       "extensions": [
