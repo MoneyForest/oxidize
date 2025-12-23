@@ -12,6 +12,7 @@ pub struct HealthResponse {
     status: &'static str,
 }
 
+#[tracing::instrument]
 pub async fn health() -> Json<HealthResponse> {
     Json(HealthResponse { status: "ok" })
 }
@@ -28,6 +29,7 @@ pub struct TenantResponse {
     name: String,
 }
 
+#[tracing::instrument(skip(state))]
 pub async fn list_tenants(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<ListTenantsResponse>, StatusCode> {
@@ -68,6 +70,7 @@ pub struct StaffResponse {
     email: String,
 }
 
+#[tracing::instrument(skip(state))]
 pub async fn list_staffs(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<ListStaffsResponse>, StatusCode> {

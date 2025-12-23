@@ -39,6 +39,7 @@ fn to_proto_tenant(t: oxidize_domain::Tenant) -> Tenant {
 
 #[tonic::async_trait]
 impl TenantService for TenantServiceImpl {
+    #[tracing::instrument(skip(self, request), fields(service = "tenant"))]
     async fn get_tenant(
         &self,
         request: Request<GetTenantRequest>,
@@ -60,6 +61,7 @@ impl TenantService for TenantServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "tenant"))]
     async fn list_tenants(
         &self,
         request: Request<ListTenantsRequest>,
@@ -82,6 +84,7 @@ impl TenantService for TenantServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "tenant"))]
     async fn create_tenant(
         &self,
         request: Request<CreateTenantRequest>,
@@ -100,6 +103,7 @@ impl TenantService for TenantServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "tenant"))]
     async fn update_tenant(
         &self,
         request: Request<UpdateTenantRequest>,
@@ -121,6 +125,7 @@ impl TenantService for TenantServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "tenant"))]
     async fn delete_tenant(
         &self,
         request: Request<DeleteTenantRequest>,

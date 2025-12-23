@@ -1,0 +1,67 @@
+services:
+  app:
+    build: .
+    command: ["http-server", "--port", "8080"]
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://oxidize:oxidize@postgres:5432/maindb
+      OTLP_ENDPOINT: http://jaeger:4317
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+
+  grpc:
+    build: .
+    command: ["grpc-server", "--port", "50051"]
+    ports:
+      - "50051:50051"
+    environment:
+      DATABASE_URL: postgres://oxidize:oxidize@postgres:5432/maindb
+      OTLP_ENDPOINT: http://jaeger:4317
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+
+  migrate:
+    build: .
+    command: ["migrate"]
+    environment:
+      DATABASE_URL: postgres://oxidize:oxidize@postgres:5432/maindb
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: oxidize
+      POSTGRES_PASSWORD: oxidize
+      POSTGRES_DB: maindb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oxidize"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+
+volumes:
+  postgres_data:

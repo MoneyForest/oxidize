@@ -52,6 +52,7 @@ fn parse_role(role: &str) -> StaffRole {
 
 #[tonic::async_trait]
 impl StaffService for StaffServiceImpl {
+    #[tracing::instrument(skip(self, request), fields(service = "staff"))]
     async fn get_staff(
         &self,
         request: Request<GetStaffRequest>,
@@ -75,6 +76,7 @@ impl StaffService for StaffServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "staff"))]
     async fn list_staffs(
         &self,
         request: Request<ListStaffsRequest>,
@@ -98,6 +100,7 @@ impl StaffService for StaffServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "staff"))]
     async fn create_staff(
         &self,
         request: Request<CreateStaffRequest>,
@@ -123,6 +126,7 @@ impl StaffService for StaffServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "staff"))]
     async fn update_staff(
         &self,
         request: Request<UpdateStaffRequest>,
@@ -147,6 +151,7 @@ impl StaffService for StaffServiceImpl {
         }))
     }
 
+    #[tracing::instrument(skip(self, request), fields(service = "staff"))]
     async fn delete_staff(
         &self,
         request: Request<DeleteStaffRequest>,

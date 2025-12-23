@@ -2,6 +2,7 @@ mod cli;
 mod config;
 mod grpc;
 mod http;
+mod telemetry;
 
 use clap::Parser;
 use cli::{Cli, Commands};
@@ -10,30 +11,23 @@ use cli::{Cli, Commands};
 async fn main() -> anyhow::Result<()> {
     dotenvy::dotenv().ok();
 
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive(tracing::Level::INFO.into()),
-        )
-        .init();
+    let config = config::Config::from_env();
+    let _provider = telemetry::init_telemetry(&config)?;
 
     let cli = Cli::parse();
 
-    match cli.command {
-        Commands::HttpServer { port } => {
-            http::run_server(port).await?;
-        }
-        Commands::GrpcServer { port } => {
-            grpc::run_grpc_server(port).await?;
-        }
+    let result = match cli.command {
+        Commands::HttpServer { port } => http::run_server(port).await,
+        Commands::GrpcServer { port } => grpc::run_grpc_server(port).await,
         Commands::Migrate => {
             tracing::info!("Running migrations...");
-            let config = config::Config::from_env();
             let pool = oxidize_infrastructure::create_pool(&config.database_url).await?;
             sqlx::migrate!("../../migrations").run(&pool).await?;
             tracing::info!("Migrations completed");
+            Ok(())
         }
-    }
+    };
 
-    Ok(())
+    telemetry::shutdown_telemetry(_provider);
+    result
 }
