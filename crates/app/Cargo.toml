@@ -9,22 +9,9 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow.workspace = true
-oxidize-domain.workspace = true
-oxidize-usecase.workspace = true
 oxidize-infrastructure.workspace = true
-async-trait.workspace = true
 tokio.workspace = true
 clap.workspace = true
-axum.workspace = true
-tower.workspace = true
-tower-http.workspace = true
-tonic.workspace = true
-prost.workspace = true
 tracing.workspace = true
-tracing-subscriber.workspace = true
 sqlx.workspace = true
-serde.workspace = true
 dotenvy.workspace = true
-
-[build-dependencies]
-tonic-build.workspace = true
