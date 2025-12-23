@@ -6,8 +6,8 @@ WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
-COPY proto ./proto
-COPY migrations ./migrations
+COPY schema/proto ./schema/proto
+COPY db/migrations ./db/migrations
 
 RUN cargo build --release
 
@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 WORKDIR /app
 
 COPY --from=builder /app/target/release/oxidize /app/oxidize
-COPY --from=builder /app/migrations /app/migrations
+COPY --from=builder /app/db/migrations /app/db/migrations
 
 ENV RUST_LOG=info
 

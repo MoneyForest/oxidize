@@ -16,7 +16,7 @@ async fn main() -> anyhow::Result<()> {
         Commands::Migrate => {
             tracing::info!("Running migrations...");
             let pool = oxidize_infrastructure::create_pool(&env.database_url).await?;
-            sqlx::migrate!("../../migrations").run(&pool).await?;
+            sqlx::migrate!("../../db/migrations").run(&pool).await?;
             tracing::info!("Migrations completed");
             Ok(())
         }
